@@ -31,6 +31,10 @@ struct point
 #define JOYSTICK_2_VRX A2
 #define JOYSTICK_2_VRY A3
 
+/************* analog stick vars *************/
+
+#define JOYSTICK_THRESHOLD 175
+
 /************* game vars *************/
 float gameSpeed = 3;
 byte gameEnded = 0;
@@ -39,6 +43,7 @@ long lastGameStep = 0;
 /************* snake vars *************/
 #define SNAKES_COUNT 1
 byte snkDir[2] = {DIR_RIGHT, DIR_RIGHT};
+byte futureSnkDir[2] = {DIR_RIGHT, DIR_RIGHT};
 byte snkId[2] = {1, 2};
 ArduinoQueue<point> snkPoints[2] = {ArduinoQueue<point>(256), ArduinoQueue<point>(256)};
 
@@ -139,6 +144,19 @@ void printGridToMatrix()
 /************* joystick functions *************/
 void takeJoystickInput()
 {
+  int joystickX = analogRead(JOYSTICK_1_VRX);
+  int joystickY = analogRead(JOYSTICK_1_VRY);
+
+  byte currentSnakeDir = snkDir[0];
+
+  if (currentSnakeDir != DIR_UP && 1024 - joystickY < JOYSTICK_THRESHOLD)
+    setSnakeDir(0, DIR_UP);
+  else if (currentSnakeDir != DIR_DOWN && joystickY < JOYSTICK_THRESHOLD)
+    setSnakeDir(0, DIR_DOWN);
+  else if (currentSnakeDir != DIR_RIGHT && 1024 - joystickX < JOYSTICK_THRESHOLD)
+    setSnakeDir(0, DIR_RIGHT);
+  else if (currentSnakeDir != DIR_LEFT && joystickX < JOYSTICK_THRESHOLD)
+    setSnakeDir(0, DIR_LEFT);
 }
 
 /************* util fns *************/
@@ -177,6 +195,7 @@ void stepSnakes()
   {
     point snakeTail = snkPoints[snakeIdx].getHead();
     point snakeHead = snkPoints[snakeIdx].getTail();
+    snkDir[snakeIdx] = futureSnkDir[snakeIdx];
     byte snakeDirection = snkDir[snakeIdx];
     byte snakeId = snkId[snakeIdx];
 
@@ -198,7 +217,7 @@ void setSnakeDir(int snakeIdx, byte direction)
   if (currentSnakeDir == DIR_UP && direction == DIR_DOWN || currentSnakeDir == DIR_DOWN && direction == DIR_UP || currentSnakeDir == DIR_RIGHT && direction == DIR_LEFT || currentSnakeDir == DIR_LEFT && direction == DIR_RIGHT)
     return;
 
-  snkDir[snakeIdx] = direction;
+  futureSnkDir[snakeIdx] = direction;
 }
 
 void updateFoodPos()
@@ -288,7 +307,7 @@ void setup()
 /************* loop *************/
 void loop()
 {
-  takeKeyboardInput();
+  takeJoystickInput();
 
   if (unblockingDelay(&lastGameStep, long(1000.0 / gameSpeed)))
     stepGame();
