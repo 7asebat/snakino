@@ -17,9 +17,13 @@ struct point
 
 /************* led matrix output pins *************/
 
-#define PIN_DIN 8
-#define PIN_CS 9
-#define PIN_CLK 10
+#define PIN_CS_1 8
+#define PIN_CS_2 9
+#define PIN_CS_3 10
+#define PIN_CS_4 11
+#define PIN_DIN 12
+#define PIN_CLK 13
+#define LC_CNT 4
 
 /************* analog stick pins *************/
 
@@ -33,7 +37,7 @@ struct point
 
 /************* analog stick vars *************/
 
-#define JOYSTICK_THRESHOLD 175
+#define JOYSTICK_THRESHOLD 150
 
 /************* game vars *************/
 float gameSpeed = 3;
@@ -50,16 +54,19 @@ ArduinoQueue<point> snkPoints[2] = {ArduinoQueue<point>(256), ArduinoQueue<point
 /************* led matrix variables *************/
 
 #define LED_MATRIX_INTENSITY 0 // 0..15, 0 is lowest
-#define LED_MATRIX_COUNT 2
+#define LED_MATRIX_COUNT 4
 
-byte ledMatrixIdx[2][2] = {{0, 1}, {2, 3}};
-
-LedControl lc = LedControl(PIN_DIN, PIN_CLK, PIN_CS, LED_MATRIX_COUNT);
+LedControl lc1 = LedControl(PIN_DIN, PIN_CLK, PIN_CS_1, 1);
+LedControl lc2 = LedControl(PIN_DIN, PIN_CLK, PIN_CS_2, 1);
+LedControl lc3 = LedControl(PIN_DIN, PIN_CLK, PIN_CS_3, 1);
+LedControl lc4 = LedControl(PIN_DIN, PIN_CLK, PIN_CS_4, 1);
+LedControl* lcArr[LC_CNT] = { &lc1, &lc2, &lc3, &lc4 };
+byte ledMatrixIdx[2][2] = {{0, 2}, {1, 3}};
 
 /************* game matrix *************/
 
 #define GAME_MATRIX_W 16
-#define GAME_MATRIX_L 8
+#define GAME_MATRIX_L 16
 
 #define GAME_MATRIX_CELL_EMPTY 0
 #define GAME_MATRIX_CELL_FOOD 100
@@ -87,11 +94,12 @@ void initPinModes()
 
 void initLedMatrices()
 {
-  for (int i = 0; i < LED_MATRIX_COUNT; i++)
+  for(int i=0; i < LC_CNT; i++)
   {
-    lc.shutdown(i, false);
-    lc.setIntensity(i, LED_MATRIX_INTENSITY);
-    lc.clearDisplay(i);
+    LedControl* lc = lcArr[i];
+    lc->shutdown(0, false);
+    lc->setIntensity(0, LED_MATRIX_INTENSITY);
+    lc->clearDisplay(0);
   }
 }
 
@@ -123,20 +131,24 @@ void initSnakesInQueue()
 
 void printGridToMatrix()
 {
-  int i = 0, j = 0, ledMatrixIdxRow, ledMatrixIdxCol;
-  byte buffer = 0x00;
+  int i = 0, j = 0, ledMatrixIdxRow, ledMatrixIdxCol, colIdx, lcIdx;
+  byte buf = 0x00;
 
   for (i = 0; i < GAME_MATRIX_L; i++)
     for (j = 0; j < GAME_MATRIX_W; j++)
     {
-      buffer <<= 1;
-      buffer |= (gameMatrix[i][j] != GAME_MATRIX_CELL_EMPTY) ? 0x01 : 0x00;
+      buf <<= 1;
+      buf |= (gameMatrix[i][j] != GAME_MATRIX_CELL_EMPTY) ? 0x01 : 0x00;
       if (j % 8 == 7)
       {
         ledMatrixIdxRow = i / 8;
         ledMatrixIdxCol = j / 8;
-        lc.setColumn(ledMatrixIdx[ledMatrixIdxRow][ledMatrixIdxCol], 7 - (i % 8), buffer);
-        buffer = 0x00;
+        lcIdx = ledMatrixIdx[ledMatrixIdxRow][ledMatrixIdxCol];
+        LedControl* lc = lcArr[lcIdx];
+        colIdx = (ledMatrixIdxCol % 2) ? 7 - (i % 8) : i % 8;
+        buf = (ledMatrixIdxCol % 2) ? reverseb(buf) : buf;
+        lc->setRow(0, colIdx, buf);
+        buf = 0x00;
       }
     }
 }
@@ -149,13 +161,13 @@ void takeJoystickInput()
 
   byte currentSnakeDir = snkDir[0];
 
-  if (currentSnakeDir != DIR_UP && 1024 - joystickY < JOYSTICK_THRESHOLD)
+  if (currentSnakeDir != DIR_UP && joystickX < JOYSTICK_THRESHOLD)
     setSnakeDir(0, DIR_UP);
-  else if (currentSnakeDir != DIR_DOWN && joystickY < JOYSTICK_THRESHOLD)
+  else if (currentSnakeDir != DIR_DOWN && 1024 - joystickX < JOYSTICK_THRESHOLD)
     setSnakeDir(0, DIR_DOWN);
-  else if (currentSnakeDir != DIR_RIGHT && 1024 - joystickX < JOYSTICK_THRESHOLD)
+  else if (currentSnakeDir != DIR_RIGHT && joystickY < JOYSTICK_THRESHOLD)
     setSnakeDir(0, DIR_RIGHT);
-  else if (currentSnakeDir != DIR_LEFT && joystickX < JOYSTICK_THRESHOLD)
+  else if (currentSnakeDir != DIR_LEFT && 1024 - joystickY < JOYSTICK_THRESHOLD)
     setSnakeDir(0, DIR_LEFT);
 }
 
@@ -171,6 +183,16 @@ point evalNewPoint(point curPos, byte dir)
   else if (dir == DIR_LEFT)
     return point{curPos.i, curPos.j - 1};
   return curPos;
+}
+
+byte reverseb(byte start)
+{
+  byte e=0;
+  for (byte i=0;i<8;i++) {
+    e = e <<1;
+    e |= ((start>>i) & 0x01);
+  }
+  return e;
 }
 
 bool unblockingDelay(long *lastMillis, long delay)
