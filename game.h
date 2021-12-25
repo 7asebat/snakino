@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "snake.h"
 #include "led_control.h"
+#include "Arduino.h"
 
 struct Game
 {

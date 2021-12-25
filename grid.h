@@ -1,12 +1,13 @@
 #pragma once
+#include "Arduino.h"
 
 struct Grid
 {
-  static const short cellEmpty = 0;
-  static const short cellFoodLow = 100;
-  static const short cellFoodHigh = 101;
-  static const short cellForceHigh = 200;
-  static const short L = 16;
-  static const short W = 16;
-  short matrix[Grid::L][Grid::W];
+  static const byte cellEmpty = 0;
+  static const byte cellFoodLow = 100;
+  static const byte cellFoodHigh = 101;
+  static const byte cellForceHigh = 200;
+  static const byte L = 16;
+  static const byte W = 16;
+  byte matrix[Grid::L][Grid::W];
 };

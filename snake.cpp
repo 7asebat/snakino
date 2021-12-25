@@ -7,20 +7,20 @@ void Snake::initSnakeVars()
     this->snkDir[i] = Direction::right;
     this->futureSnkDir[i] = Direction::right;
     this->newSnkHead[i] = Point{-1, -1};
-    this->snkPoints[i] = ArduinoQueue<Point>(256);
+    this->snkPoints[i].clear();
   }
 }
 
 void Snake::initSnakesInQueue()
 {
-  this->snkPoints[0].enqueue(Point{0, 0});
-  this->snkPoints[0].enqueue(Point{0, 1});
-  this->snkPoints[0].enqueue(Point{0, 2});
+  this->snkPoints[0].push(Point{0, 0});
+  this->snkPoints[0].push(Point{0, 1});
+  this->snkPoints[0].push(Point{0, 2});
   if (Snake::snakesCount < 2)
     return;
-  this->snkPoints[1].enqueue(Point{15, 0});
-  this->snkPoints[1].enqueue(Point{15, 1});
-  this->snkPoints[1].enqueue(Point{15, 2});
+  this->snkPoints[1].push(Point{15, 0});
+  this->snkPoints[1].push(Point{15, 1});
+  this->snkPoints[1].push(Point{15, 2});
 }
 
 void Snake::setSnakeDir(int snakeIdx, byte direction)

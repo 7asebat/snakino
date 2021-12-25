@@ -33,7 +33,7 @@ void Game::stepSnakes(Snake *snake)
 {
   for (int snakeIdx = 0; snakeIdx < Snake::snakesCount; snakeIdx++)
   {
-    Point snakeHead = snake->snkPoints[snakeIdx].getTail();
+    Point snakeHead = snake->snkPoints[snakeIdx].last();
     snake->snkDir[snakeIdx] = snake->futureSnkDir[snakeIdx];
     byte snakeDirection = snake->snkDir[snakeIdx];
     byte snakeId = snake->snkId[snakeIdx];
@@ -49,16 +49,16 @@ void Game::stepSnakes(Snake *snake)
 
   for (int snakeIdx = 0; snakeIdx < Snake::snakesCount; snakeIdx++)
   {
-    Point snakeTail = snake->snkPoints[snakeIdx].getHead();
+    Point snakeTail = snake->snkPoints[snakeIdx].first();
     Point newSnakeHead = snake->newSnkHead[snakeIdx];
     byte snakeId = snake->snkId[snakeIdx];
     this->grid.matrix[newSnakeHead.i][newSnakeHead.j] = snakeId;
-    snake->snkPoints[snakeIdx].enqueue(newSnakeHead);
+    snake->snkPoints[snakeIdx].push(newSnakeHead);
 
     if (!(this->isSnakeHeadOnFood(newSnakeHead)))
     {
       this->grid.matrix[snakeTail.i][snakeTail.j] = Grid::cellEmpty;
-      snake->snkPoints[snakeIdx].dequeue();
+      snake->snkPoints[snakeIdx].shift();
     }
   }
 }
@@ -68,7 +68,7 @@ void Game::updateFoodPos()
   if (this->grid.matrix[foodPos.i][foodPos.j] != Grid::cellFoodHigh && this->grid.matrix[foodPos.i][foodPos.j] != Grid::cellFoodLow)
     this->foodPos = Point{-1, -1};
 
-  if (this->foodPos.i != -1 || this->foodPos.j != -1)
+  if (this->foodPos.i != byte(-1) || this->foodPos.j != byte(-1))
     return;
 
   byte i = random(Grid::L), j = random(Grid::W);
@@ -115,24 +115,6 @@ void Game::checkGameEnd(Snake *snake)
 
 void Game::endGame(LC *lc)
 {
-  Serial.println("GAME ENDED!");
-  if (this->gameEndReason == GameEndReason::none)
-    Serial.println("GAME END REASON: NONE");
-  else if (this->gameEndReason == GameEndReason::firstSnakeSelfCollide)
-    Serial.println("GAME END REASON: FIRST SNAKE SELF COLLIDE");
-  else if (this->gameEndReason == GameEndReason::firstSnakeGridCollide)
-    Serial.println("GAME END REASON: FIRST SNAKE GRID COLLIDE");
-  else if (this->gameEndReason == GameEndReason::firstSnakeOtherCollide)
-    Serial.println("GAME END REASON: FIRST SNAKE OTHER COLLIDE");
-  else if (this->gameEndReason == GameEndReason::secondSnakeSelfCollide)
-    Serial.println("GAME END REASON: SECOND SNAKE SELF COLLIDE");
-  else if (this->gameEndReason == GameEndReason::secondSnakeGridCollide)
-    Serial.println("GAME END REASON: SECOND SNAKE GRID COLLIDE");
-  else if (this->gameEndReason == GameEndReason::secondSnakeOtherCollide)
-    Serial.println("GAME END REASON: SECOND SNAKE OTHER COLLIDE");
-  else if (this->gameEndReason == GameEndReason::tie)
-    Serial.println("GAME END REASON: TIE");
-
   lc->printGridToMatrix(&(this->grid));
 
   if (this->gameEndReason == GameEndReason::firstSnakeSelfCollide || this->gameEndReason == GameEndReason::firstSnakeGridCollide || this->gameEndReason == GameEndReason::firstSnakeOtherCollide)

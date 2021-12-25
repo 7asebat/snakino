@@ -1,11 +1,12 @@
 #pragma once
+#include "Arduino.h"
 
 /*
 * Self defined point struct
 */
 struct Point
 {
-  short i, j;
+  byte i, j;
 };
 
 /*
@@ -13,10 +14,10 @@ struct Point
 */
 namespace Direction
 {
-  static const short up = 0;
-  static const short right = 1;
-  static const short down = 2;
-  static const short left = 3;
+  static const byte up = 0;
+  static const byte right = 1;
+  static const byte down = 2;
+  static const byte left = 3;
 };
 
 namespace Joystick

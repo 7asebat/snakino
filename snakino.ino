@@ -1,4 +1,4 @@
-#include <ArduinoQueue.h>
+#include <EEPROM.h>
 #include "pins.h"
 #include "utils.h"
 #include "constants.h"
@@ -15,10 +15,10 @@ Snake snake;
 /************* setup *************/
 void setup()
 {
-  Serial.begin(9600);
   initRandSeed();
   Pin::initPinModes();
   lc.initLedMatrices();
+  // fetchDataFromEEPROM(&game, &snake);
   game.checkAndWaitNewGameStart(&snake, &lc);
 }
 
@@ -41,4 +41,5 @@ void loop()
   }
 
   lc.printGridToMatrix(&(game.grid));
+  //  persistDataToEEPROM(&game, &snake);
 }
