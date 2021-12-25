@@ -11,6 +11,10 @@ struct Game
 
   const float gameSpeed = 2;
   long lastGameStep = 0;
+
+  long lastFoodBlink = 0;
+  const short foodBlinkInterval = 200;
+
   byte gameEndReason = GameEndReason::none;
 
   byte player1Ready = false;
@@ -21,6 +25,8 @@ struct Game
   void initSnakesOnGrid(Snake *snake);
 
   bool isSnakeHeadOnFood(Point snakeHead);
+
+  void blinkFood();
 
   void stepSnakes(Snake *snake);
 

@@ -23,6 +23,12 @@ bool Game::isSnakeHeadOnFood(Point snakeHead)
   return snakeHead.i == this->foodPos.i && snakeHead.j == this->foodPos.j;
 }
 
+void Game::blinkFood()
+{
+  Point foodPos = this->foodPos;
+  this->grid.matrix[foodPos.i][foodPos.j] = (this->grid.matrix[foodPos.i][foodPos.j] == Grid::cellFoodHigh) ? Grid::cellFoodLow : Grid::cellFoodHigh;
+}
+
 void Game::stepSnakes(Snake *snake)
 {
   for (int snakeIdx = 0; snakeIdx < Snake::snakesCount; snakeIdx++)
@@ -59,7 +65,7 @@ void Game::stepSnakes(Snake *snake)
 
 void Game::updateFoodPos()
 {
-  if (this->grid.matrix[foodPos.i][foodPos.j] != Grid::cellFood)
+  if (this->grid.matrix[foodPos.i][foodPos.j] != Grid::cellFoodHigh && this->grid.matrix[foodPos.i][foodPos.j] != Grid::cellFoodLow)
     this->foodPos = Point{-1, -1};
 
   if (this->foodPos.i != -1 || this->foodPos.j != -1)
@@ -70,7 +76,7 @@ void Game::updateFoodPos()
   if (this->grid.matrix[i][j] != Grid::cellEmpty)
     return;
 
-  this->grid.matrix[i][j] = Grid::cellFood;
+  this->grid.matrix[i][j] = Grid::cellFoodHigh;
   this->foodPos.i = i, this->foodPos.j = j;
 }
 
@@ -128,12 +134,31 @@ void Game::endGame(LC *lc)
     Serial.println("GAME END REASON: TIE");
 
   lc->printGridToMatrix(&(this->grid));
-  playBuzzer(500);
+
+  if (this->gameEndReason == GameEndReason::firstSnakeSelfCollide || this->gameEndReason == GameEndReason::firstSnakeGridCollide || this->gameEndReason == GameEndReason::firstSnakeOtherCollide)
+  {
+    playBuzzer(500);
+    delay(500);
+    playBuzzer(500);
+  }
+  else if (this->gameEndReason == GameEndReason::secondSnakeSelfCollide || this->gameEndReason == GameEndReason::secondSnakeGridCollide || this->gameEndReason == GameEndReason::secondSnakeOtherCollide)
+  {
+    playBuzzer(500);
+  }
+  else if (this->gameEndReason == GameEndReason::tie)
+  {
+    playBuzzer(500);
+    delay(500);
+    playBuzzer(500);
+    delay(500);
+    playBuzzer(500);
+  }
 }
 
 void Game::initGameVars(Snake *snake)
 {
   this->lastGameStep = millis();
+  this->lastFoodBlink = millis();
   this->foodPos = {-1, -1};
   this->player1Ready = false;
   this->player2Ready = false;
@@ -150,7 +175,7 @@ void Game::startGame(Snake *snake, LC *lc)
   lc->printGridToMatrix(&(this->grid));
 }
 
-void Game::checkAndWaitNewGameStart(Snake* snake, LC* lc)
+void Game::checkAndWaitNewGameStart(Snake *snake, LC *lc)
 {
   byte player1SW = 0, player2SW = 0;
 

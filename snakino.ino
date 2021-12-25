@@ -6,7 +6,6 @@
 #include "game.h"
 #include "snake.h"
 
-
 /************* *************/
 
 LC lc;
@@ -31,6 +30,9 @@ void loop()
 
   if (unblockingDelay(&(game.lastGameStep), long(1000.0 / game.gameSpeed)))
     game.stepGame(&snake);
+
+  if (unblockingDelay(&(game.lastFoodBlink), long(game.foodBlinkInterval)))
+    game.blinkFood();
 
   if (game.gameEndReason)
   {

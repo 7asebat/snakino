@@ -3,7 +3,6 @@
 
 LC::LC()
 {
-  
 }
 
 void LC::initLedMatrices()
@@ -26,7 +25,7 @@ void LC::printGridToMatrix(Grid *gameGrid)
     for (j = 0; j < gameGrid->W; j++)
     {
       buf <<= 1;
-      buf |= (gameGrid->matrix[i][j] != Grid::cellEmpty) ? 0x01 : 0x00;
+      buf |= (gameGrid->matrix[i][j] != Grid::cellEmpty && gameGrid->matrix[i][j] != Grid::cellFoodLow) ? 0x01 : 0x00;
       if (j % 8 == 7)
       {
         ledMatrixIdxRow = i / 8;
