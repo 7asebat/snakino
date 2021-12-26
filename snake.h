@@ -12,7 +12,7 @@ struct Snake
   byte futureSnkDir[2] = {Direction::right, Direction::right};
   Point newSnkHead[2] = {Point{-1, -1}, Point{-1, -1}};
   const byte snkId[2] = {1, 2};
-  Queue<Point, 200> snkPoints[2] = {Queue<Point, 200>{}, Queue<Point, 200>{}};
+  Queue<Point, 128> snkPoints[2] = {Queue<Point, 128>{}, Queue<Point, 128>{}};
 
   void initSnakeVars();
   void initSnakesInQueue();

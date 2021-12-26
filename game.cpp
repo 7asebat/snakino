@@ -26,6 +26,9 @@ bool Game::isSnakeHeadOnFood(Point snakeHead)
 void Game::blinkFood()
 {
   Point foodPos = this->foodPos;
+  if (foodPos.i == byte(-1) && foodPos.j == byte(-1))
+    return;
+
   this->grid.matrix[foodPos.i][foodPos.j] = (this->grid.matrix[foodPos.i][foodPos.j] == Grid::cellFoodHigh) ? Grid::cellFoodLow : Grid::cellFoodHigh;
 }
 
@@ -176,5 +179,6 @@ void Game::checkAndWaitNewGameStart(Snake *snake, LC *lc)
     this->player2Ready |= player2SW;
   }
 
-  this->startGame(snake, lc);
+  this->player1Ready = false;
+  this->player2Ready = false;
 }
