@@ -1,10 +1,6 @@
 #include "led_control.h"
 #include "utils.h"
 
-LC::LC()
-{
-}
-
 void LC::initLedMatrices()
 {
   for (int i = 0; i < LC::LCCount; i++)
@@ -18,7 +14,7 @@ void LC::initLedMatrices()
 
 void LC::printGridToMatrix(Grid *gameGrid)
 {
-  int i = 0, j = 0, ledMatrixIdxRow, ledMatrixIdxCol, colIdx, lcIdx;
+  int i = 0, j = 0, ledMatrixIdxRow, ledMatrixIdxCol, rowIdx, lcIdx;
   byte buf = 0x00;
 
   for (i = 0; i < gameGrid->L; i++)
@@ -32,9 +28,10 @@ void LC::printGridToMatrix(Grid *gameGrid)
         ledMatrixIdxCol = j / 8;
         lcIdx = LC::ledMatrixIdx[ledMatrixIdxRow][ledMatrixIdxCol];
         LedControl *lc = this->lcArr[lcIdx];
-        colIdx = (ledMatrixIdxCol % 2) ? 7 - (i % 8) : i % 8;
+        rowIdx = (ledMatrixIdxCol % 2) ? 7 - (i % 8) : i % 8; // checks if we are in the right column of the led matrices
+                                                              // because in real life, the right column is flipped upside down
         buf = (ledMatrixIdxCol % 2) ? reverseb(buf) : buf;
-        lc->setRow(0, colIdx, buf);
+        lc->setRow(0, rowIdx, buf);
         buf = 0x00;
       }
     }

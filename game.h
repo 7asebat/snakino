@@ -10,7 +10,7 @@ struct Game
 {
   Grid grid;
 
-  const float gameSpeed = 2;
+  const float gameSpeed = 2.5;
   long lastGameStep = 0;
 
   long lastFoodBlink = 0;
@@ -44,4 +44,6 @@ struct Game
   void startGame(Snake *snake, LC *lc);
 
   void checkAndWaitNewGameStart(Snake *snake, LC *lc);
+
+  void checkGameReset(Snake *snake, LC *lc);
 };

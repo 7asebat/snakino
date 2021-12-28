@@ -13,14 +13,14 @@ void Snake::initSnakeVars()
 
 void Snake::initSnakesInQueue()
 {
-  this->snkPoints[0].push(Point{0, 0});
-  this->snkPoints[0].push(Point{0, 1});
-  this->snkPoints[0].push(Point{0, 2});
-  if (Snake::snakesCount < 2)
-    return;
-  this->snkPoints[1].push(Point{15, 0});
-  this->snkPoints[1].push(Point{15, 1});
-  this->snkPoints[1].push(Point{15, 2});
+  int k = (Grid::L / (Snake::snakesCount + 1));
+  for (int i = 0; i < Snake::snakesCount; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      this->snkPoints[i].push(Point{k * (i + 1), j});
+    }
+  }
 }
 
 void Snake::setSnakeDir(int snakeIdx, byte direction)

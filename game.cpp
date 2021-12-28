@@ -8,14 +8,14 @@ void Game::initSnakesOnGrid(Snake *snake)
     for (int j = 0; j < Grid::W; j++)
       this->grid.matrix[i][j] = Grid::cellEmpty;
 
-  this->grid.matrix[0][0] = snake->snkId[0];
-  this->grid.matrix[0][1] = snake->snkId[0];
-  this->grid.matrix[0][2] = snake->snkId[0];
-  if (Snake::snakesCount < 2)
-    return;
-  this->grid.matrix[15][0] = snake->snkId[1];
-  this->grid.matrix[15][1] = snake->snkId[1];
-  this->grid.matrix[15][2] = snake->snkId[1];
+  int k = (Grid::L / (Snake::snakesCount + 1));
+  for (int i = 0; i < Snake::snakesCount; i++)
+  {
+    for (int j = 0; j < 3; j++)
+    {
+      this->grid.matrix[k * (i + 1)][j] = snake->snkId[i];
+    }
+  }
 }
 
 bool Game::isSnakeHeadOnFood(Point snakeHead)
@@ -181,4 +181,15 @@ void Game::checkAndWaitNewGameStart(Snake *snake, LC *lc)
 
   this->player1Ready = false;
   this->player2Ready = false;
+}
+
+void Game::checkGameReset(Snake *snake, LC *lc)
+{
+  byte j1_sw = digitalRead(Pin::joystick_1_SW), j2_sw = digitalRead(Pin::joystick_2_SW);
+  if (!j1_sw && !j2_sw)
+  {
+    this->startGame(snake, lc);
+    delay(1000);
+    this->checkAndWaitNewGameStart(snake, lc);
+  }
 }

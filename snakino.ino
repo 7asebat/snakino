@@ -31,17 +31,6 @@ void fetchDataFromEEPROM()
   game.player2Ready = false;
   game.lastGameStep = 0;
   game.lastFoodBlink = 0;
-
-  Serial.println("Fetched data from EEPROM!");
-  Serial.println("game matrix");
-  for(int i=0;i<Grid::L;i++)
-  {
-    for(int j=0;j<Grid::W;j++)
-    {
-      Serial.print(game.grid.matrix[i][j]); Serial.print("\t");
-    }
-    Serial.println("");
-  }
 }
 
 void persistDataToEEPROM()
@@ -56,7 +45,6 @@ void persistDataToEEPROM()
 /************* setup *************/
 void setup()
 {
-  Serial.begin(9600);
 //  clearEEPROM();
   initRandSeed();
   Pin::initPinModes();
@@ -74,6 +62,7 @@ void loop()
 {
   snake.takeAndParseJoystickInput(0);
   snake.takeAndParseJoystickInput(1);
+  game.checkGameReset(&snake, &lc);
 
   if (unblockingDelay(&(game.lastGameStep), long(1000.0 / game.gameSpeed)))
     game.stepGame(&snake);

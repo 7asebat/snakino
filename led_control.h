@@ -16,8 +16,6 @@ struct LC
   LedControl *lcArr[LC::LCCount] = {&lc1, &lc2, &lc3, &lc4};
   inline static const byte ledMatrixIdx[2][2] = {{0, 2}, {1, 3}};
 
-  LC();
-
   void initLedMatrices();
 
   void printGridToMatrix(Grid *gameGrid);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "queue.h"
+#include "grid.h"
 #include "constants.h"
 #include "pins.h"
 
