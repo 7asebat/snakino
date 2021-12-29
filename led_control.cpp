@@ -7,7 +7,7 @@ void LC::initLedMatrices()
   {
     LedControl *lc = this->lcArr[i];
     lc->shutdown(0, false);
-    lc->setIntensity(0, LC::LCIntensity);
+    lc->setIntensity(0, LCConsts::LCIntensity);
     lc->clearDisplay(0);
   }
 }

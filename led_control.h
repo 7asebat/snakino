@@ -3,11 +3,11 @@
 #include "LedControl.h"
 #include "pins.h"
 #include "grid.h"
+#include "constants.h"
 
 struct LC
 {
   static const short LCCount = 4;
-  static const short LCIntensity = 0; // (0..15), 0 is lowest
 
   LedControl lc1 = LedControl(Pin::LC_DIN, Pin::LC_CLK, Pin::LC_CS_1, 1);
   LedControl lc2 = LedControl(Pin::LC_DIN, Pin::LC_CLK, Pin::LC_CS_2, 1);

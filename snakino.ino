@@ -45,7 +45,7 @@ void persistDataToEEPROM()
 /************* setup *************/
 void setup()
 {
-  //  clearEEPROM();
+  clearEEPROM();
   initRandSeed();
   Pin::initPinModes();
   lc.initLedMatrices();

@@ -30,6 +30,11 @@ namespace GameConsts
   const float gameSpeed = 2.5;
 };
 
+namespace LCConsts
+{
+  const short LCIntensity = 0; // (0..15), 0 is lowest
+};
+
 namespace GameEndReason
 {
   static const short none = 0;
