@@ -9,8 +9,7 @@
 struct Game
 {
   Grid grid;
-
-  const float gameSpeed = 2.5;
+  
   long lastGameStep = 0;
 
   long lastFoodBlink = 0;

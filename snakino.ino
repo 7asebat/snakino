@@ -45,7 +45,7 @@ void persistDataToEEPROM()
 /************* setup *************/
 void setup()
 {
-//  clearEEPROM();
+  //  clearEEPROM();
   initRandSeed();
   Pin::initPinModes();
   lc.initLedMatrices();
@@ -64,7 +64,7 @@ void loop()
   snake.takeAndParseJoystickInput(1);
   game.checkGameReset(&snake, &lc);
 
-  if (unblockingDelay(&(game.lastGameStep), long(1000.0 / game.gameSpeed)))
+  if (unblockingDelay(&(game.lastGameStep), long(1000.0 / GameConsts::gameSpeed)))
     game.stepGame(&snake);
 
   if (unblockingDelay(&(game.lastFoodBlink), long(game.foodBlinkInterval)))

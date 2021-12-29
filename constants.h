@@ -25,6 +25,11 @@ namespace Joystick
   static const short inputThreshold = 125;
 };
 
+namespace GameConsts
+{
+  const float gameSpeed = 2.5;
+};
+
 namespace GameEndReason
 {
   static const short none = 0;
